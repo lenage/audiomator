@@ -1,7 +1,7 @@
 require 'spec_helper'
 describe Audiomator::Record do
   before(:all) do
-    @audio_file = File.expand_path('../../fixtures/tina_is_a_women-56kbps.m4a', __FILE__)
+    @audio_file = "#{fixture_path}/tina_is_a_women-56kbps.m4a"
     @record = Audiomator::Record.new(@audio_file)
   end
 
