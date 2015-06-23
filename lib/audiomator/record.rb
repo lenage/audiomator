@@ -1,6 +1,8 @@
+require 'timeout'
 require 'time'
 require 'shellwords'
 require 'open3'
+require 'audiomator/options'
 
 module Audiomator
   class Record
@@ -13,8 +15,7 @@ module Audiomator
       @path = path
 
       # ffmpeg will output to stderr
-      command = "#{Audiomator.ffmpeg} -i #{Shellwords.escape(@path)}"
-      @output = Open3.popen3(command) { |stdin, stdout, stderr| stderr.read }
+      @output = Open3.popen3(ffmpeg_command) { |_stdin, _stdout, stderr| stderr.read }
 
       parse_container
       parse_duration
@@ -32,7 +33,45 @@ module Audiomator
       File.size(@path)
     end
 
+    def basename
+      File.basename(@path, '.*')
+    end
+
+    def clip(start_time, end_time, output = nil, options = {})
+      options = default_clip_options.merge!(options)
+      output = output_file(start_time, end_time, options) unless output
+      opts = Options.new(start_time, end_time, options[:bitrate], options[:metadata])
+      command = [ffmpeg_command, opts.to_s, output].join(' ')
+      Audiomator.logger.info("Running audio processing...\n #{command}\n")
+      @output_error = ''
+
+      begin
+        Timeout.timeout(Audiomator.timeout) do
+          _stdout, stderr, status = Open3.capture3(command)
+          @output_error = stderr
+          unless status.success?
+            fail Error, "Proecess Failed, Full output: #{stderr}"
+          end
+        end
+      rescue Timeout::Error => e
+        raise Error, "Proecess Timeout #{e.message} \n: #{@output_error} \n"
+      end
+    end
+
     private
+
+    def output_file(start_time, end_time, options = default_clip_options)
+      output_filename = "#{basename}-#{duration}-#{start_time}_#{end_time}.#{options[:format]}"
+      File.join File.dirname(@path), output_filename
+    end
+
+    def default_clip_options
+      { bitrate: '32k', format: 'm4a', metadata: {} }
+    end
+
+    def ffmpeg_command
+      "#{Audiomator.ffmpeg} -i #{Shellwords.escape(@path)}"
+    end
 
     def parse_container
       @output[/Input \#\d+\,\s*(\S+),\s*from/]

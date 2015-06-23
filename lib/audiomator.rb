@@ -36,4 +36,20 @@ module Audiomator
   def self.ffmpeg
     @ffmpeg || 'ffmpeg'
   end
+
+  def self.ffprobe=(bin)
+    @ffprobe = bin
+  end
+
+  def self.ffprobe
+    @ffprobe || 'ffprobe'
+  end
+
+  def self.timeout=(time)
+    @timeout = time
+  end
+
+  def self.timeout
+    @timeout || 45
+  end
 end

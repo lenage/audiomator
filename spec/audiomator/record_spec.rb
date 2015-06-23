@@ -1,8 +1,11 @@
 require 'spec_helper'
+require 'fileutils'
 describe Audiomator::Record do
   before(:all) do
     @audio_file = "#{fixture_path}/tina_is_a_women-56kbps.m4a"
     @record = Audiomator::Record.new(@audio_file)
+    @start_time = '00:00:00.59'
+    @end_time = '00:00:01.53'
   end
 
   describe 'initializing' do
@@ -55,6 +58,28 @@ describe Audiomator::Record do
       it 'should have audio_stream nil' do
         expect(@record.stream).to eql nil
       end
+    end
+  end
+
+  context '#clip' do
+    before do
+      @ofile = @record.send(:output_file, @start_time, @end_time)
+      FileUtils.rm(@ofile) if File.exist?(@ofile)
+    end
+
+    it 'should clip audio with metadata successfully' do
+      metadata = {description: 'This is Tina'}
+      @record.clip(@start_time, @end_time, nil, metadata: metadata)
+      expect(File.exist?(@ofile)).to be_truthy
+      expect(File.size(@ofile)).to be > 0
+      expect(FileUtils.rm(@ofile)).to be_truthy
+    end
+
+    it 'should clip audio successfully' do
+      @record.clip(@start_time, @end_time)
+      expect(File.exist?(@ofile)).to be_truthy
+      expect(File.size(@ofile)).to be > 0
+      expect(FileUtils.rm(@ofile)).to be_truthy
     end
   end
 end
