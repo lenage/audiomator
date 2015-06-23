@@ -2,6 +2,7 @@ require 'logger'
 
 require 'audiomator/error'
 require 'audiomator/options'
+require 'audiomator/record'
 require 'audiomator/version'
 
 # Main module for Audiomator
