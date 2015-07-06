@@ -56,6 +56,7 @@ module Audiomator
       rescue Timeout::Error => e
         raise Error, "Proecess Timeout #{e.message} \n: #{@output_error} \n"
       end
+      Audiomator.logger.info("Audio processing finished\n")
     end
 
     private
