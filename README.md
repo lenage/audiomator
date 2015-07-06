@@ -20,7 +20,28 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    ## Load an audio file
+    @audio_file = "PATH/TO/AUDIO_FILE/FILENAME.m4a"
+    @record = Audiomator::Record.new(@audio_file)
+
+    # Get audio metadata
+    @record.duration
+    @record.bitrate
+    @record.size
+    @record.sample_rate
+    @record.codec
+
+    # any FFMPEG errors when loading audio
+    @record.valid?
+
+    # clip audio with start_time and end_time
+    @start_time = '00:00:00.59'
+    @end_time = '00:00:01.53'
+    @record.clip(@start_time, @end_time)
+
+    # Adding metadata to output audio file
+    metadata = {description: 'This is AudioMator'}
+    @record.clip(@start_time, @end_time, nil, metadata: metadata)
 
 ## Development
 
