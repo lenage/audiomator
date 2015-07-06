@@ -81,5 +81,15 @@ describe Audiomator::Record do
       expect(File.size(@ofile)).to be > 0
       expect(FileUtils.rm(@ofile)).to be_truthy
     end
+
+    it 'should support prefix options' do
+      @record.clip(@start_time, @end_time, nil, prefix: 'abc')
+      filepath = @record.send(:output_file, @start_time, @end_time, prefix: 'abc')
+      expect(File.exist?(filepath)).to be_truthy
+      expect(File.size(filepath)).to be > 0
+      expect(FileUtils.rm(filepath)).to be_truthy
+      expect(FileUtils.rm_r(File.dirname(filepath))).to be_truthy
+      expect(File.exist?(@ofile)).to be_falsey
+    end
   end
 end

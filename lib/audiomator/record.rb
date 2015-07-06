@@ -3,6 +3,7 @@ require 'time'
 require 'shellwords'
 require 'open3'
 require 'audiomator/options'
+require 'fileutils'
 
 module Audiomator
   class Record
@@ -40,6 +41,7 @@ module Audiomator
     def clip(start_time, end_time, output = nil, options = {})
       options = default_clip_options.merge!(options)
       output = output_file(start_time, end_time, options) unless output
+      FileUtils.mkdir_p(File.dirname(output)) unless Dir.exist?(File.dirname(output))
       opts = Options.new(start_time, end_time, options[:bitrate], options[:metadata])
       command = [ffmpeg_command, opts.to_s, output].join(' ')
       Audiomator.logger.info("Running audio processing...\n #{command}\n")
@@ -62,7 +64,9 @@ module Audiomator
     private
 
     def output_file(start_time, end_time, options = default_clip_options)
+      options = default_clip_options.merge!(options)
       output_filename = "#{basename}-#{duration}-#{start_time}_#{end_time}.#{options[:format]}"
+      output_filename = "#{options[:prefix].to_s}/#{output_filename}" if options[:prefix]
       File.join File.dirname(@path), output_filename
     end
 
