@@ -43,6 +43,9 @@ Or install it yourself as:
     metadata = {description: 'This is AudioMator'}
     @record.clip(@start_time, @end_time, nil, metadata: metadata)
 
+    # Add prefix to save all clips to a specify folder
+    @record.clip(@start_time, @end_time, nil, prefix: 'clips')
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
