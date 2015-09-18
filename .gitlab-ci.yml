@@ -1,0 +1,28 @@
+image:
+  ruby:engzo-ci
+
+before_script:
+  - export LC_ALL="C.UTF-8"
+  - export RAILS_ENV=test
+  - export RACK_ENV=test
+  - eval "$(rbenv init -)"
+  - rbenv global 2.2.2
+  - rbenv rehash
+  - ruby -v
+  - gem -v
+  - env
+  - locale
+
+  - bundle install -j8 --path /cache/bundle --quiet
+
+
+stages:
+  - test
+
+job_test:
+  stage: test
+  tags:
+    - ruby
+
+  script:
+    - bundle exec rspec
