@@ -1,5 +1,5 @@
 image:
-  ruby:engzo-ci
+  ruby:ffmpeg
 
 before_script:
   - export LC_ALL="C.UTF-8"
@@ -10,8 +10,6 @@ before_script:
   - rbenv rehash
   - ruby -v
   - gem -v
-  - env
-  - locale
 
   - bundle install -j8 --path /cache/bundle --quiet
 
