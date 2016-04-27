@@ -42,7 +42,11 @@ module Audiomator
       options = default_clip_options.merge!(options)
       output = output_file(start_time, end_time, options) unless output
       FileUtils.mkdir_p(File.dirname(output)) unless Dir.exist?(File.dirname(output))
-      opts = Options.new(start_time, end_time, options[:bitrate], options[:metadata])
+      opts = Options.new(start_time,
+                         end_time,
+                         options[:bitrate],
+                         options[:sample_rate],
+                         options[:metadata])
       command = [ffmpeg_command, opts.to_s, output].join(' ')
       Audiomator.logger.info("Running audio processing...\n #{command}\n")
       @output_error = ''
@@ -71,7 +75,7 @@ module Audiomator
     end
 
     def default_clip_options
-      { bitrate: '32k', format: 'm4a', metadata: {} }
+      { bitrate: '32k', format: 'm4a', metadata: {}, sample_rate: '44100'}
     end
 
     def ffmpeg_command
